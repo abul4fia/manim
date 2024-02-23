@@ -40,12 +40,12 @@ __all__ = [
 from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
-from colour import Color
 
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.scene.scene import Scene
 
 from .. import config
 from ..animation.animation import Animation
@@ -58,7 +58,7 @@ from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import GREY, YELLOW
+from ..utils.color import GREY, YELLOW, ParsableManimColor
 from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
@@ -131,7 +131,7 @@ class Indicate(Transform):
     color
         The color the mobject temporally takes.
     rate_func
-        The function definig the animation progress at every point in time.
+        The function defining the animation progress at every point in time.
     kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor
 
@@ -148,7 +148,7 @@ class Indicate(Transform):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_factor: float = 1.2,
         color: str = YELLOW,
         rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
@@ -158,7 +158,7 @@ class Indicate(Transform):
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> "Mobject":
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -314,7 +314,7 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
@@ -348,7 +348,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
     message="Use Create then FadeOut to achieve this effect.",
 )
 class ShowCreationThenFadeOut(Succession):
-    def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
@@ -397,7 +397,7 @@ class ApplyWave(Homotopy):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
         wave_func: Callable[[float], float] = smooth,
@@ -415,7 +415,7 @@ class ApplyWave(Homotopy):
             # This wave is build up as follows:
             # The time is split into 2*ripples phases. In every phase the amplitude
             # either rises to one or goes down to zero. Consecutive ripples will have
-            # their amplitudes in oppising directions (first ripple from 0 to 1 to 0,
+            # their amplitudes in opposing directions (first ripple from 0 to 1 to 0,
             # second from 0 to -1 to 0 and so on). This is how two ripples would be
             # divided into phases:
 
@@ -454,7 +454,7 @@ class ApplyWave(Homotopy):
                 return wave_func(t * phases)
             elif phase == phases - 1:
                 # last ripple. Rising or falling depending on the number of ripples
-                # The (ripples % 2)-term is used to make this destinction.
+                # The (ripples % 2)-term is used to make this distinction.
                 t -= phase / phases  # Time relative to the phase
                 return (1 - wave_func(t * phases)) * (2 * (ripples % 2) - 1)
             else:
@@ -516,7 +516,7 @@ class Wiggle(Animation):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
@@ -544,8 +544,8 @@ class Wiggle(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: "Mobject",
-        starting_submobject: "Mobject",
+        submobject: Mobject,
+        starting_submobject: Mobject,
         alpha: float,
     ) -> None:
         submobject.points[:, :] = starting_submobject.points
@@ -609,7 +609,7 @@ class Circumscribe(Succession):
         fade_out=False,
         time_width=0.3,
         buff: float = SMALL_BUFF,
-        color: Color = YELLOW,
+        color: ParsableManimColor = YELLOW,
         run_time=1,
         stroke_width=DEFAULT_STROKE_WIDTH,
         **kwargs

@@ -5,7 +5,6 @@ from __future__ import annotations
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 import numpy as np
-from colour import Color
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
@@ -17,11 +16,14 @@ from ...utils.color import (
     BLACK,
     WHITE,
     YELLOW,
+    ManimColor,
     color_gradient,
     color_to_rgba,
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
+
+__all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -76,7 +78,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         num_new_points = len(points)
         self.points = np.append(self.points, points, axis=0)
         if rgbas is None:
-            color = Color(color) if color else self.color
+            color = ManimColor(color) if color else self.color
             rgbas = np.repeat([color_to_rgba(color, alpha)], num_new_points, axis=0)
         elif len(rgbas) != len(points):
             raise ValueError("points and rgbas must have same length")

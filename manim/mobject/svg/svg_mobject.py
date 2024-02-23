@@ -280,7 +280,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 mob = self.polyline_to_mobject(shape)
             elif isinstance(shape, se.Text):
                 mob = self.text_to_mobject(shape)
-            elif isinstance(shape, se.Use) or type(shape) == se.SVGElement:
+            elif isinstance(shape, se.Use) or type(shape) is se.SVGElement:
                 continue
             else:
                 logger.warning(f"Unsupported element type: {type(shape)}")
@@ -441,9 +441,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.should_center:
             self.center()
         if self.svg_height is not None:
-            self.set_height(self.svg_height)
+            self.set(height=self.svg_height)
         if self.svg_width is not None:
-            self.set_width(self.svg_width)
+            self.set(width=self.svg_width)
 
 
 class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):

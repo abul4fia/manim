@@ -17,6 +17,8 @@ from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 from manim.utils.iterables import listify
 from manim.utils.space_ops import normalize_along_axis
 
+__all__ = ["OpenGLSurface", "OpenGLTexturedSurface"]
+
 
 class OpenGLSurface(OpenGLMobject):
     r"""Creates a Surface.
@@ -380,7 +382,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
 
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
-        if type(image_file) == np.ndarray:
+        if isinstance(image_file, np.ndarray):
             image_file = change_to_rgba_array(image_file)
 
         # Set texture information
